@@ -16,7 +16,6 @@
           <table id="employee_data_table" class="table table-striped">
             <thead>
               <tr>
-                <th>Avatar</th>
                 <th>Employee Details</th>
                 <th>From</th>
                 <th>To</th>
@@ -39,17 +38,20 @@
               <tr>
                <td>
                 @php
-                   $mediaItems = $leave->employee->getMediaUrlAttribute()['original']; 
+                    $mediaItems = $leave->employee->getMediaUrlAttribute()['original']; 
                 @endphp
-                 <img src="{{$leave->employee->mediaUrl['thumb']}}" item="{{$mediaItems}}" class='table-user-thumb'>
-               </td>
-               <td>
-                    <div class=''>
-                        <b>Gender :</b> <span>{{ $leave->employee->gender}}</span></br>
-                        <b>Employee Id :</b> <span>{{ $leave->employee->id}}</span></br>
-                        <b>Schedule :</b> <span>{{ $leave->employee->schedule->time_in }}-{{$leave->employee->schedule->time_out}}</span></br>
-                        <b>Address :</b> <span>{{ $leave->employee->address}}</span></br>
-                    </div>
+                <div class='row'>
+                  <div class='col-md-3 text-center'>
+                    <img src="{{$leave->employee->mediaUrl['thumb']}}" item="{{$mediaItems}}" class='table-user-thumb'>
+                  </div>
+                  <div class='col-md-6 col-lg-6 my-auto'>
+                    <b class='mb-0'>{{ $leave->employee->first_name }} {{$leave->employee->last_name}}</b>
+                    <p class='mb-2' title='".$data->employee->employee_id."'><small><i class='ik ik-at-sign'></i>{{$leave->employee->employee_id}}</small></p>
+                  </div>
+                  <div class='col-md-4 col-lg-4'>
+                    <small class='text-muted float-right'></small>
+                  </div>
+                </div>
                </td>
                <td>{{ $leave->from }}</td>
                <td>{{ $leave->to }}</td>
@@ -62,9 +64,9 @@
                </td>
                <td>
                  <div class='table-actions'>
-                  <a data-href="{{route('admin.leave.show',$leave->employee_id)}}" class='show-employee cursure-pointer'>
+                  {{-- <a data-href="{{route('admin.leave.show',$leave->employee_id)}}" class='show-employee cursure-pointer'>
                     <i class='ik ik-eye text-primary'></i>
-                  </a>
+                  </a> --}}
                   <a href="{{route("admin.leave.edit",$leave)}}">
                     <i class='ik ik-edit-2 text-dark'></i>
                   </a>

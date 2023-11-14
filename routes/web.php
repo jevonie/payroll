@@ -133,6 +133,7 @@ Route::group(['as'=>'admin.'],function(){
         // Fingerprint Devices
         Route::resource('/finger_device', App\Http\Controllers\Admin\BiometricDeviceController::class);
         Route::controller(App\Http\Controllers\Admin\BiometricDeviceController::class)->group(function () {
+            Route::post('getdata/finger_device',"getData")->name('finger_device.getData');
             Route::delete('finger_device/destroy', 'massDestroy')->name('finger_device.massDestroy');
             Route::get('finger_device/{fingerDevice}/employees/add', 'addEmployee')->name('finger_device.add.employee');
             Route::get('finger_device/{fingerDevice}/get/attendance', 'getAttendance')->name('finger_device.get.attendance');

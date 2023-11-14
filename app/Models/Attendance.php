@@ -35,9 +35,14 @@ class Attendance extends Model
     public function getTimeInAttribute(){
         return date('h:i A', strtotime($this->attributes['time_in']));
     }
-
+    public function getTimeInRaw(){
+        return date('H:i:s', strtotime($this->attributes['time_in']));
+    }
     public function getTimeOutAttribute(){
         return date('h:i A', strtotime($this->attributes['time_out']));
+    }
+    public function getTimeOutRaw(){
+        return date('H:i:s', strtotime($this->attributes['time_out']));
     }
 
     public function getWhrAttribute(){

@@ -28,4 +28,11 @@ class Schedule extends Model
     public function setTimeOutAttribute($value){
         $this->attributes['time_out'] = date('H:i:s', strtotime($value));
     }
+    public function getTimeInRaw(){
+        return date('H:i:s', strtotime($this->attributes['time_in']));
+    }
+    public function getTimeOutRaw(){
+        return date('H:i:s', strtotime($this->attributes['time_out']));
+    }
+
 }

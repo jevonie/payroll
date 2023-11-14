@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Payslips {{ $date }} | PeSystem - A System for HR Payment Generator. </title>
+    <title>Payslips {{ $date }} | AMS - A System for HR Payment Generator. </title>
     <style type="text/css">
       body {
           position: relative;
@@ -114,7 +114,7 @@
   <body>
     <div class="card border-1">
           <div class="card-header">
-              <h2 class="text-center border-top-bootom-1 py-4">PESYSTEM - EMPLOYEE PAYMENT SLIPS</h2>
+              <h2 class="text-center border-top-bootom-1 py-4">AMS - EMPLOYEE PAYMENT SLIPS</h2>
               <h2 class="text-center border-top-bootom-1 py-4">{{ $date }}</h2>
           </div>
           <div class="card-body border">

@@ -30,8 +30,17 @@ class BiometricDeviceController extends Controller
      */
     public function index()
     {
-        $devices = FingerDevices::all();
-        return view('admin.fingerDevices.index', compact('devices'));
+       // $devices = FingerDevices::all();
+        return View($this->folder.'index',[
+            'get_data' => route($this->folder.'getData'),
+        ]);
+       // return view('admin.fingerDevices.index', compact('devices'));
+    }
+
+    public function getData(){
+        return View($this->folder.'content',[
+            'devices' =>  FingerDevices::all(),
+        ]);
     }
 
     /**
@@ -41,7 +50,7 @@ class BiometricDeviceController extends Controller
      */
     public function create()
     {
-        return view('admin.fingerDevices.create');
+        return view($this->folder.'create');
     }
 
     /**
@@ -82,12 +91,12 @@ class BiometricDeviceController extends Controller
 
     public function show(FingerDevices $fingerDevice)
     {
-        return view('admin.fingerDevices.show', compact('fingerDevice'));
+        return view($this->folder.'show', compact('fingerDevice'));
     }
 
     public function edit(FingerDevices $fingerDevice)
     {
-        return view('admin.fingerDevices.edit', compact('fingerDevice'));
+        return view($this->folder.'edit', compact('fingerDevice'));
     }
 
     public function update(UpdateRequest $request, FingerDevices $fingerDevice)
@@ -241,7 +250,8 @@ class BiometricDeviceController extends Controller
                         $attendance->state = $value->state;
                         
                         $attendance->time_in = $value->attendance_time;
-                        if (!($employee->schedule->time_in >= $attendance->time_in)) {
+                        if ($employee->schedule->getTimeInRaw() >=  $attendance->getTimeInRaw()) {
+                            
                             $attendance->ontime_status = 1;
                         }else{
                             $attendance->ontime_status = 0;
@@ -265,7 +275,7 @@ class BiometricDeviceController extends Controller
                     if ($attendance) {
                         $attendance->time_out = $value->attendance_time;
                         if($attendance->time_out != null){
-                            if (!($employee->schedule->time_out <= $attendance->time_out)) {
+                            if ($employee->schedule->getTimeOutRaw() <= $attendance->getTimeOutRaw()) {
                                 $attendance->timeout_status = 1;
                             }else{
                                 $attendance->timeout_status = 0;

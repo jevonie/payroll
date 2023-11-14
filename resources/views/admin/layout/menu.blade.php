@@ -80,7 +80,7 @@
         </div>
 
         <div class="nav-lavel">Site Settings</div>
-        <div class="nav-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+        <div class="nav-item {{ request()->routeIs('admin.finger_device.*') ? 'active' : '' }}">
             <a href="{{ route("admin.finger_device.index") }}"> <i class="fas fa-fingerprint"></i><span>Biometric Device</span></a>
         </div>
         <div class="nav-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
