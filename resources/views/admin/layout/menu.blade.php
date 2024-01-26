@@ -1,11 +1,12 @@
 <div class="nav-container">
     <nav id="main-menu-navigation" class="navigation-main">
+        @if (auth()->user()->role == 'admin')
         <div class="nav-item {{ request()->routeIs(['admin.dashboard']) ? 'active' : '' }}">
             <a href="{{ route('admin.dashboard') }}"><i class="ik ik-bar-chart-2"></i><span>Dashboard</span></a>
         </div>
-
+        @endif
         <div class="nav-lavel">Manage Employees</div>
-        <div class="nav-item has-sub {{ request()->routeIs('admin.employee.*') ? 'active open' : '' }} {{ request()->routeIs('admin.overtime.*') ? 'active open' : '' }} {{ request()->routeIs('admin.cashadvance.*') ? 'active open' : '' }} {{ request()->routeIs('admin.leave.*') ? 'active open' : '' }}">
+        <div class="nav-item has-sub {{ request()->routeIs('admin.employee.*') ? 'active open' : '' }} {{ request()->routeIs('admin.overtime.*') ? 'active open' : '' }} {{ request()->routeIs('admin.cashadvance.*') ? 'active open' : '' }} {{ request()->routeIs('admin.admin-leave.*') ? 'active open' : '' }}">
             <a href="javascript:void(0)"><i class="ik users ik-users"></i><span>Employees</span> 
                 @if($counts['employees'] != 0)
                 <span title="Total Records" class="badge badge-light text-dark">
@@ -14,14 +15,18 @@
                 @endif
             </a>
             <div class="submenu-content">
+                @if (auth()->user()->role == 'admin')
                 <a href="{{ route('admin.employee.create') }}" class="menu-item {{ request()->routeIs('admin.employee.create') ? 'active' : '' }}"><i class="ik ik-user-plus"></i>Add New Employee</a>
                 <a href="{{ route('admin.employee.index') }}" class="menu-item {{ request()->routeIs('admin.employee.index') ? 'active' : '' }}"><i class="ik file-text ik-file-text"></i>List Of Employees</a>
                 <a href="{{ route('admin.overtime.index') }}" class="menu-item {{ request()->routeIs('admin.overtime.*') ? 'active' : '' }}"><i class="ik watch ik-watch"></i>Overtime</a>
                 <a href="{{ route('admin.cashadvance.index') }}" class="menu-item {{ request()->routeIs('admin.cashadvance.index') ? 'active' : '' }}"><i class="ik at-sign ik-at-sign"></i>Cash Advance</a>
-                <a href="{{ route('admin.leave.index') }}" class="menu-item {{ request()->routeIs('admin.leave.index') ? 'active' : '' }}"><i class="fas fa-share-square"></i>Leave</a>
+                @endif
+                @if (auth()->user()->role == 'admin' || auth()->user()->role == 'finance')
+                <a href="{{ route('admin.admin-leave.index') }}" class="menu-item {{ request()->routeIs('admin.admin-leave.index') ? 'active' : '' }}"><i class="fas fa-share-square"></i>Leave</a>
+                @endif
             </div>
         </div>
-
+        @if (auth()->user()->role == 'admin')
         <div class="nav-item has-sub {{ request()->routeIs('admin.attendance.*') ? 'active open' : '' }}">
             <a href="javascript:void(0)"><i class="ik ik-check-circle"></i><span>Attendance</span> 
             </a>
@@ -30,11 +35,13 @@
                 <a href="{{ route('admin.attendance.index') }}" class="menu-item {{ request()->routeIs('admin.attendance.index') ? 'active' : '' }}"><i class="ik file-text ik-file-text"></i>List Of Attendance</a>
             </div>
         </div>
-
+        @endif
+        @if (auth()->user()->role == 'admin' || auth()->user()->role == 'finance')
         <div class="nav-item {{ request()->routeIs(['admin.payroll.*']) ? 'active' : '' }}">
             <a href="{{ route('admin.payroll.index') }}"><i class="ik ik-dollar-sign"></i><span>Payroll</span></a>
         </div>
-
+        @endif
+        @if (auth()->user()->role == 'admin')
         <div class="nav-lavel">Manage Site</div>
 
         <div class="nav-item has-sub {{ request()->routeIs('admin.position.*') ? 'active open' : '' }}">
@@ -82,6 +89,13 @@
         <div class="nav-lavel">Site Settings</div>
         <div class="nav-item {{ request()->routeIs('admin.finger_device.*') ? 'active' : '' }}">
             <a href="{{ route("admin.finger_device.index") }}"> <i class="fas fa-fingerprint"></i><span>Biometric Device</span></a>
+        </div>
+        <div class="nav-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index') }}"><i class="far fa-chart-bar"></i><span>Reports</span></a>
+        </div>
+        @endif
+        <div class="nav-item {{ request()->routeIs('admin.user_logs.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.user_logs.index') }}"><i class="fas fa-list-ol"></i><span>User Logs</span></a>
         </div>
         <div class="nav-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
             <a href="{{ route('admin.profile.index') }}"><i class="ik user ik-user"></i><span>My Profile</span></a>

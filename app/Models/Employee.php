@@ -104,6 +104,9 @@ class Employee extends Model implements HasMedia
     public function cashAdvances(){
         return $this->hasMany(CashAdvance::class,'employee_id','id');
     }
+    public function deductions(){
+        return $this->hasMany(EmployeeDeduction::class,'employee_id','id');
+    }
 
     public function getTotalWorkingHourAttribute(){
         return $this->attendances->sum('num_hour');
@@ -111,6 +114,7 @@ class Employee extends Model implements HasMedia
 
     public function getGrossAmountAttribute(){
         return ($this->attendances->sum('num_hour') * $this->attributes['rate_per_hour'])/60;
+        
     }
 
     protected function avatarMedia(){
@@ -137,4 +141,14 @@ class Employee extends Model implements HasMedia
         $date = date('M d, Y', strtotime($dt));
         return $date;
     }
+
+    
+    public function totalDeductions(){
+        $total = 0;
+        foreach($this->deductions as $item){
+            $total+=$item->deduction->amount;
+        }
+        return $total;
+    }
+
 }

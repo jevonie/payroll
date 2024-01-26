@@ -5,7 +5,8 @@
     <!--Live Attendance Data-->
     <div class="card-header">
       <div class="col-md-6 d-block">
-        <a href="{{ $add_new }}" class="btn btn-sm btn-dark float-left"><i class="ik plus-square ik-plus-square"></i> Create New Attendance</a>
+        <a href="{{ $add_new }}" class="btn btn-sm btn-dark float-left mx-3"><i class="ik plus-square ik-plus-square"></i> Create New Attendance</a>
+        <a href="{{ route("admin.finger_device.process.attendance") }}" class="btn btn-sm btn-success float-left bio-actions"><i class="fas fa-sync-alt"></i> Process All Attendance</a>
       </div>
       <div class="col-md-6">
         <button type="submit" class="btn btn-primary mb-2 h-33 float-right move-to-delete-all" id="apply" disabled="true" data-href="{{ $moveToTrashAllLink }}">Action</button>
@@ -16,12 +17,13 @@
         <table id="overtime_data_table" class="table table-striped">
           <thead>
             <tr>
-              <th>Date</th>
+              <th></th>
               <th>Employee Details</th>
               <th>Time In</th>
               <th>Time Out</th>
               <th>Working Hour</th>
               <th>Actions</th>
+             
               <th></th>
             </tr>
           </thead>
@@ -62,20 +64,19 @@
      }
    },
    {
-    'targets': [0,4,5,6],
+    'targets': [4,5,6],
     'searchable':false,
     'orderable':false,
     "className": "text-center"
   }
   ],
   "columns":[
-  {"data":"date"},
+  {"data":"id"},
   {"data":"employee"},
   {"data":"time_in_details"},
   {"data":"time_out_details"},
   {"data":"whr"},
   {"data":"action"},
-  {"data":"id"},
   ],
 });
 

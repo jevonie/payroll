@@ -24,7 +24,7 @@ class AuthController extends Controller
 	{
 		
 		$validate = Validator::make($request->all(), [
-			'email' => 'required|exists:admins',
+			'email' => 'required|email',
 			'password' => 'required'
 		],
 		[
@@ -40,9 +40,11 @@ class AuthController extends Controller
 							]);
 		}
 		
-		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+		if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
 			$request->session()->regenerate();
 			return redirect()->route('admin.dashboard');
+		}elseif(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+			return redirect()->route('user.leave.index');
 		}
 		return Redirect()->back()->withErrors(['errors'=>"Password doesn't match,Please try again."]);
 	}

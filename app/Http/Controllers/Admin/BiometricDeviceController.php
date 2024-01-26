@@ -197,9 +197,7 @@ class BiometricDeviceController extends Controller
         $data = $device->getAttendance();
         
         $serial = $helper->getSerial($device);
-
-        foreach ($data as $key => $value) {
-            
+        foreach ($data as $key => $value) { 
             if ($employee = Employee::whereId($value['id'])->first()) {
       
                 $existInDb = DeviceRawLog::whereDate("attendance_date", date('Y-m-d', strtotime($value['timestamp'])))
@@ -232,17 +230,27 @@ class BiometricDeviceController extends Controller
             'redirect_to' => route($this->folder.'index')
         ]);
     }
+    public function processAttendanceAll(){
+        $this->processAttendance();
+        return response()->json([
+            'status'=>true,
+            'message'=>'Attendance Process will run in a minute!',
+            'redirect_to' => route('admin.attendance.index')
+        ]);
+    }
     public function processAttendance()
     {   
-        $rawLogs = DeviceRawLog::all();
-        foreach ($rawLogs as $value) {
-            if($value->type==0){
-                if ($employee = Employee::whereId($value->employee_id)->first()) {
+        $employees = Employee::all();
+        foreach($employees as $employee){
+            $rawLogs = DeviceRawLog::where('employee_id', $employee->id)->orderBy('attendance_date','ASC')->get();
+            $attendance_id = 0;
+            foreach($rawLogs as  $value){
+                if($value->type==0){
                     $exist = Attendance::whereDate("date", date('Y-m-d', strtotime($value->attendance_date)))
                             ->where("employee_id", $value->employee_id)
                             ->where("time_in", "<>", null)
                             ->first();
-
+    
                     if (!$exist) {
                         $attendance = new Attendance();
                         $attendance->uid = $value->uid;
@@ -250,7 +258,11 @@ class BiometricDeviceController extends Controller
                         $attendance->state = $value->state;
                         
                         $attendance->time_in = $value->attendance_time;
-                        if ($employee->schedule->getTimeInRaw() >=  $attendance->getTimeInRaw()) {
+
+                        $sched =  new Carbon($value->attendance_date." ".$employee->schedule->time_in);
+                        $att_date = new Carbon($value->attendance_date." ".$value->attendance_time);
+
+                        if ($sched->gte($att_date)) {
                             
                             $attendance->ontime_status = 1;
                         }else{
@@ -263,19 +275,27 @@ class BiometricDeviceController extends Controller
                         
                         
                         $attendance->save();
+                        $attendance_id = $attendance->id;
+                    }else{
+                        $attendance_id = $exist->id;
                     }
-                }
-            }else{
-                if ($employee = Employee::whereId($value->employee_id)->first()) {
-                    $attendance = Attendance::whereDate("date", date('Y-m-d', strtotime($value->attendance_date)))
-                            ->where("employee_id", $value->employee_id)
-                            ->where("time_out", null)
-                            ->first();
-
+                }else{
+                    $attendance = Attendance::where('id',$attendance_id)->where("time_out", null)->first();
                     if ($attendance) {
                         $attendance->time_out = $value->attendance_time;
+                        $attendance->date_timeout = $value->attendance_date; 
                         if($attendance->time_out != null){
-                            if ($employee->schedule->getTimeOutRaw() <= $attendance->getTimeOutRaw()) {
+                            
+                            $sched =  new Carbon($attendance->date." ".$employee->schedule->time_out);
+                            
+                            if($employee->schedule->next_day == 1){
+
+                                $sched = $sched->addDay();
+                            }
+    
+                            $att_date   = new Carbon($value->attendance_date." ".$attendance->time_out);
+                            
+                            if ($sched->lte($att_date)) {
                                 $attendance->timeout_status = 1;
                             }else{
                                 $attendance->timeout_status = 0;
@@ -286,15 +306,82 @@ class BiometricDeviceController extends Controller
 
                         $attendance->save();
 
-                        $time_out = new Carbon($attendance->time_out);
-                        $time_in = new Carbon($attendance->time_in);
+                        $time_out = new Carbon($attendance->date_timeout." ".$attendance->time_out);
+                        $time_in = new Carbon($attendance->date." ".$attendance->time_in);
 
                         $attendance->num_hour = $time_out->diffInMinutes($time_in);
                         $attendance->save();
+                        $attendance_id = 0;
                     }
                 }
-               
             }
         }
+        // $rawLogs = DeviceRawLog::all();
+        // foreach ($rawLogs as  $value) {
+        //     if($value->type==0){
+        //         if ($employee = Employee::whereId($value->employee_id)->first()) {
+        //             $exist = Attendance::whereDate("date", date('Y-m-d', strtotime($value->attendance_date)))
+        //                     ->where("employee_id", $value->employee_id)
+        //                     ->where("time_in", "<>", null)
+        //                     ->first();
+
+        //             if (!$exist) {
+        //                 $attendance = new Attendance();
+        //                 $attendance->uid = $value->uid;
+        //                 $attendance->employee_id = $value->employee_id;
+        //                 $attendance->state = $value->state;
+                        
+        //                 $attendance->time_in = $value->attendance_time;
+        //                 if ($employee->schedule->getTimeInRaw() >=  $attendance->getTimeInRaw()) {
+                            
+        //                     $attendance->ontime_status = 1;
+        //                 }else{
+        //                     $attendance->ontime_status = 0;
+        //                 }
+
+        //                 $attendance->date = $value->attendance_date;
+        //                 $attendance->type = $value->type;
+        //                 $attendance->num_hour = 0;
+                        
+                        
+        //                 $attendance->save();
+        //             }
+        //         }
+        //     }else{
+        //         if ($employee = Employee::whereId($value->employee_id)->first()) {
+        //             $att_date = strtotime($value->attendance_date);
+        //             if(strtotime($value->attendance_time) > strtotime('01:00:00')){
+        //                 $att_date = strtotime($value->attendance_date . ' -1 day');
+        //             }
+        //             $attendance = Attendance::whereDate("date", date('Y-m-d', $att_date))
+        //                     ->where("employee_id", $value->employee_id)
+        //                     ->where("time_out", null)
+        //                     ->first();
+
+        //             if ($attendance) {
+        //                 $attendance->time_out = $value->attendance_time;
+        //                 $attendance->date_timeout = $value->attendance_date;
+        //                 if($attendance->time_out != null){
+        //                     if ($employee->schedule->getTimeOutRaw() <= $attendance->getTimeOutRaw()) {
+        //                         $attendance->timeout_status = 1;
+        //                     }else{
+        //                         $attendance->timeout_status = 0;
+        //                     }
+        //                 }
+                       
+                       
+
+        //                 $attendance->save();
+
+        //                 $time_out = new Carbon($attendance->attendance_date." ".$attendance->time_out);
+        //                 $time_in = new Carbon($attendance->date." ".$attendance->time_in);
+
+        //                 $attendance->num_hour = $time_out->diffInMinutes($time_in);
+        //                 $attendance->save();
+        //             }
+        //         }
+               
+        //     }
+        // }
     }
 }

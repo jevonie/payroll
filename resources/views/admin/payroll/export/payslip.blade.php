@@ -133,7 +133,7 @@
                             <td width="25%" align="right">Employee ID: </td>
                             <td width="25%">{{ $payroll->employee_id }}</td>   
                             <td width="25%" align="right">Total Hours: </td>
-                            <td width="25%" align="right">{{ $payroll->total_working_hour }}</td> 
+                            <td width="25%" align="right">{{ number_format(($payroll->total_working_hour/60), 3) }}</td> 
                         </tr>
                         <tr> 
                             <td></td> 
@@ -141,11 +141,24 @@
                             <td width="25%" align="right"><b>Gross Pay: </b></td>
                             <td width="25%" align="right"><b>{{ number_format($payroll->gross_amount,2) }}</b></td> 
                         </tr>
+                        <tr>
+                          <td colspan="4"><b>Benefits Deductions</b></td>
+                        </tr>
+                        @foreach ($payroll->deductions as $item)
+                        <tr> 
+                            <td colspan="2">{{ $item->deduction->name }}</td>
+                            <td width="25%" align="right"></td>
+                            <td width="25%" align="right">{{ number_format($item->deduction->amount,2) }}</td> 
+                        </tr> 
+                        @endforeach
                         <tr> 
                             <td></td> 
                             <td></td>
                             <td width="25%" align="right">Deduction: </td>
-                            <td width="25%" align="right">{{ number_format($deduction_amount,2) }}</td> 
+                            <td width="25%" align="right">{{ number_format($payroll->totalDeductions(),2) }}</td> 
+                        </tr>
+                        <tr>
+                          <td colspan="4">&nbsp;</td>
                         </tr>
                         <tr> 
                             <td></td> 
@@ -170,7 +183,7 @@
                             <td></td>
                             <td width="25%" align="right"><b>Total Deduction:</b></td>
                             <td width="25%" align="right"><b>
-                                {{ number_format($deduction_amount + $payroll->cashAdvances->sum('rate_amount'),2) }}
+                                {{ number_format($payroll->totalDeductions() + $payroll->cashAdvances->sum('rate_amount'),2) }}
                             </b></td> 
                         </tr>
                         <tr> 
@@ -178,10 +191,11 @@
                             <td></td>
                             <td width="25%" align="right"><b>Net Pay:</b></td>
                             <td width="25%" align="right"><b>
-                                {{ number_format(($payroll->gross_amount + $total_overtime_amount) - ($deduction_amount + $payroll->cashAdvances->sum('rate_amount')),2) }}
+                                {{ number_format(($payroll->gross_amount + $total_overtime_amount) - ($payroll->totalDeductions() + $payroll->cashAdvances->sum('rate_amount')),2) }}
                             </b></td> 
                         </tr>
                     </table><hr>
+                    <div style="page-break-after: always;"></div>
                   </div>
                 </div>
             @endforeach

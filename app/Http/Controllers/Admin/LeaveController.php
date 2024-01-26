@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 
 class LeaveController extends Controller
 {   
-    private $folder = "admin.leave.";
+    private $folder = "admin.admin-leave.";
     /**
      * Display a listing of the resource.
      */
@@ -51,6 +51,7 @@ class LeaveController extends Controller
             'employee_id' => $request->employee_id,
             'from' => $request->from,
             'to' => $request->to,
+            'status' => $request->status,
             'description' => $request->description,
         ];
         $overtime = Leave::create($data);
@@ -62,19 +63,32 @@ class LeaveController extends Controller
             ]);
     }
 
+    public function notifUpdate($id)
+    {
+        $leave = Leave::find($id);
+        $leave->admin_notif = 0;
+        $leave->save();
+
+        return redirect()->route("admin.admin-leave.index");
+    }
+
     /**
      * Display the specified resource.
      */
-    public function show(Leave $leave)
+    public function show($leave_id)
     {
-        //
+        $leave = Leave::find($leave_id);
+        return View($this->folder.'show',[
+            'leave'=>$leave,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Leave $leave)
+    public function edit($id)
     {
+        $leave = Leave::find($id);
         $employees = Employee::get();
         return View($this->folder.'edit',[
             'leave' => $leave,
@@ -86,19 +100,24 @@ class LeaveController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Leave $leave)
+    public function update(Request $request, $leave_id)
     {
+        $leave = Leave::find($leave_id);
+
         $data = [
             'employee_id' => $request->employee_id,
             'from' => $request->from,
             'to' => $request->to,
+            'status' => $request->status,
             'description' => $request->description,
+            'employee_notif' => 1,
         ];
         $leave->update($data);
 
+        $employee = Employee::find($request->employee_id);
         return response()->json([
             'status'=>true,
-            'message'=> "{$leave->employee->first_name} {$leave->employee->last_name} updated successfully.",
+            'message'=> "{$employee->first_name} {$employee->last_name} updated successfully.",
             'redirect_to' => route($this->folder.'index')
             ]);
     }

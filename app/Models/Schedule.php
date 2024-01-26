@@ -9,6 +9,7 @@ class Schedule extends Model
     protected $fillable = [
         'time_in',
         'time_out',
+        'next_day',
     ];
 
     public $timestamps = false;

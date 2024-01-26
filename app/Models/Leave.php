@@ -15,8 +15,11 @@ class Leave extends Model
         'to',
         'type',
         'description',
-        'message',
+        'status',
         'is_active',
+        'employee_notif',
+        'admin_notif',
+        'finance_notif',
     ];
 
     

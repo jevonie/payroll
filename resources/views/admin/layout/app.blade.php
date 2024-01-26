@@ -35,6 +35,33 @@
         <script src="{{ asset('admin_assets/src/js/vendor/modernizr-2.8.3.min.js') }}"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css"/>
         <link rel="stylesheet" type="text/css" href="{{ asset('admin_assets/dist/css/site-style.css') }}">
+        <style>
+            .badge-number{
+                position: absolute;
+                inset: -2px -5px auto auto;
+                font-weight: normal;
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+            .dropdown-menu{
+                width: unset !important;
+            }
+            .header-nav .notifications .notification-item {
+                display: flex;
+                align-items: center;
+                padding: 15px 10px;
+                transition: 0.3s;
+            }
+            .header-nav .notifications .notification-item i {
+                margin: 0 20px 0 10px;
+                font-size: 24px;
+            }
+            .header-nav .notifications .notification-item h4 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+        </style>
         @yield('css')
 
     </head>
@@ -42,7 +69,7 @@
     <body>
         
         <div class="wrapper">
-            <header class="header-top" header-theme="light">
+            <header class="header-top header-nav" header-theme="light">
                 <div class="container-fluid">
                     <div class="d-flex justify-content-between">
                         <div class="top-menu d-flex align-items-center">
@@ -50,6 +77,33 @@
                             <button type="button" id="navbar-fullscreen" class="nav-link"><i class="ik ik-maximize"></i></button>
                         </div>
                         <div class="top-menu d-flex align-items-center">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                                        <i class="far fa-bell"></i>
+                                        <span class="badge bg-primary badge-number">{{ $counts['leaves_count'] }}</span>
+                                    </div>
+                                    <ul class="dropdown-menu dropdown-menu-right dropdown-menu-arrow notifications">
+                                        <li class="dropdown-header">
+                                          You have {{ $counts['leaves_count'] }} new notifications
+                                        </li>
+                                        <li>
+                                          <hr class="dropdown-divider">
+                                        </li>
+                            
+                                        @foreach ($counts['leaves'] as $item)
+                                        <li class="notification-item">
+                                            <i class="bi bi-exclamation-circle text-warning"></i>
+                                            <a href="{{ route("admin.admin-leave.notifUpdate", $item->id)}}">
+                                              <h4>{{ $item->employee->last_name }}, {{ $item->employee->first_name }}</h4>
+                                              <p>{{ $item->status }}</p>
+                                              {{-- <p>30 min. ago</p> --}}
+                                            </a>
+                                          </li>
+                                        @endforeach
+                            
+                                      </ul>
+                            </div>
                             <div class="">
                                 <span class="text-secondary mr-2">Hi, {{ Auth::user()->username }}</span>
                             </div>
@@ -61,7 +115,7 @@
                                     <a class="dropdown-item" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="ik ik-power dropdown-icon"></i> Logout</a>
                                 </div>
                             </div>
-
+                           
                         </div>
                     </div>
                 </div>

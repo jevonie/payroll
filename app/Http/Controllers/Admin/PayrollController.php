@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\{Employee,Overtime,Deduction,Attendance};
+use App\Models\{Employee,Overtime,Deduction,Attendance,EmployeeDeduction};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DataTables;
@@ -29,7 +29,6 @@ class PayrollController extends Controller
     }
 
     public function getDataTable(Request $request){
-        $deduction_amount = Deduction::sum("amount");
     	$payroll = $this->payroll($request);
 
         return Datatables::of($payroll)
@@ -40,8 +39,8 @@ class PayrollController extends Controller
                     ->addColumn('gross', function($data){
                         return number_format($data->gross_amount,2);
                     })
-                    ->addColumn('deduction', function($data) use($deduction_amount){
-                    	return number_format($deduction_amount,2);
+                    ->addColumn('deduction', function($data){
+                    	return number_format($data->totalDeductions(),2);
                     })
                     ->addColumn('cash_advance', function($data){
                     	return number_format($data->cashAdvances->sum('rate_amount'),2);
@@ -53,20 +52,26 @@ class PayrollController extends Controller
                         } 
                         return number_format($amount,2);
                     })
-                    ->addColumn('net_pay', function($data) use ($deduction_amount){
+                    ->addColumn('net_pay', function($data){
                         $total_overtime_amount = 0;
                         foreach($data->overtimes as $ov){
                             $total_overtime_amount += ($ov->rate_amount * $ov->hour)/60;
                         }
-                    	$total_deduction = $deduction_amount + $data->cashAdvances->sum('rate_amount');
+                    	$total_deduction = $data->totalDeductions() + $data->cashAdvances->sum('rate_amount');
 
                     	$amount = ($data->gross_amount + $total_overtime_amount) - $total_deduction;
                     	if($amount <= 0){
                     		return "<b class='text-danger'>Rs.".number_format($amount,2)."</b>";
                     	}
-                    	return "<b>Rs.".number_format($amount,2)."</b>";
+                    	return "<b>PHP ".number_format($amount,2)."</b>";
                     })
-                    ->rawColumns(['employee','gross','deduction','cash_advance','net_pay','overtime'])
+                    ->addColumn('action', function($data){
+                        $btn = "<div class='table-actions'>
+                        <a href='".route($this->folder."edit",$data->id)."'><i class='ik ik-edit-2 text-dark'></i></a>
+                        </div>";
+                        return $btn;
+                    })
+                    ->rawColumns(['employee','gross','deduction','cash_advance','net_pay','overtime','action'])
                     ->toJson();
     }
 
@@ -87,16 +92,17 @@ class PayrollController extends Controller
     	]);
     	*/
     	$fileName = "payroll-".date("d-M-Y")."-".time().'.pdf';
+        $this->saveLog("EXPORT PDF: ".$fileName);
     	return $pdf->download($fileName);
     }
 
     public function payslipExportPDF(Request $request){
     	$payslips = $this->payroll($request);
-
     	$pdf = PDF::loadView($this->folder."export.payslip",[
     		'payrolls'=> $payslips,
     		'date'=> $request->date,
     		'deduction_amount'=> Deduction::sum("amount"),
+            'deductions' => Deduction::get(),
     	]);
 		/*
     	return View($this->folder."export.payslip",[
@@ -106,9 +112,25 @@ class PayrollController extends Controller
     	]);
 		*/
     	$fileName = "payslip-".date("d-M-Y")."-".time().'.pdf';
+        $this->saveLog("EXPORT PAYSLIP: ".$fileName);
+        // return $pdf->stream($fileName);
     	return $pdf->download($fileName);
     }
+    public function pay13monthExportPDF(Request $request){
+        $request->date = "January 01, 2023 - December 31, 2023";
+    	$payslips = $this->payroll($request);
 
+    	$pdf = PDF::loadView($this->folder."export.pay13month",[
+    		'payrolls'=> $payslips,
+    		'date'=> $request->date,
+    		'deduction_amount'=> Deduction::sum("amount"),
+            'deductions' => Deduction::get(),
+    	]);
+
+    	$fileName = "pay13th-".date("d-M-Y")."-".time().'.pdf';
+        $this->saveLog("EXPORT PAYSLIP: ".$fileName);
+    	return $pdf->stream($fileName);
+    }
     private function payroll($request){
         $date = explode(' - ', $request->date);
         
@@ -127,9 +149,45 @@ class PayrollController extends Controller
             },
             "overtimes" => function($q) use ($start_date,$end_date){
                 $q->whereBetween("date",[$start_date,$end_date]);
-            }
+            },
+            "deductions" => function($q) use ($start_date,$end_date){
+                $q->whereBetween("date",[$start_date,$end_date]);
+            },
         ])->whereIn("id",$empIds)->get();
-
         return $payslips;
+    }
+    public function edit($employee_id)
+    {   
+        $employee_deductions = EmployeeDeduction::where("employee_id", $employee_id)->get();
+        return View($this->folder.'edit',[
+            'deductions' =>  Deduction::get(),
+            'employee_id' => $employee_id,
+            'employee_deductions' => $employee_deductions,
+            'store_data' => route($this->folder."update"),
+        ]);
+    }
+    public function update(Request $request)
+    { 
+        $employee_deduct = new EmployeeDeduction();
+        $employee_deduct->date          = $request->month_of.-'01';
+        $employee_deduct->employee_id   = $request->employee_id;
+        $employee_deduct->deduction_id  = $request->deduction_id;
+        $employee_deduct->save();
+
+        return response()->json([
+            'status'=>true,
+            'message'=> 'Updated successfully.',
+            'redirect_to' => route($this->folder.'edit', $request->employee_id)
+        ]);
+    }
+    public function destroy($id)
+    { 
+        $deduction = EmployeeDeduction::find($id);
+        $deduction->delete();
+        return response()->json([
+                'status' => true,
+                'message' => "Your Record has been Deleted!",
+                'getDataUrl' => route($this->folder.'edit', $deduction->employee_id),
+            ]);
     }
 }

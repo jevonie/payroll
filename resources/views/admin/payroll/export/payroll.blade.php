@@ -139,7 +139,7 @@
                         foreach($payroll->overtimes as $ov){
                             $total_overtime_amount += ($ov->rate_amount * $ov->hour)/60;
                         }
-                        $net_pay = ($payroll->gross_amount + $total_overtime_amount) - ($deduction_amount + $payroll->cashAdvances->sum('rate_amount')); 
+                        $net_pay = ($payroll->gross_amount + $total_overtime_amount) - ($payroll->totalDeductions() + $payroll->cashAdvances->sum('rate_amount')); 
                         $total += $net_pay;
                       @endphp
 
@@ -150,7 +150,7 @@
                     @endforeach
                     <tr>
                       <td colspan="2" class="text-right"><b>Total</b></td>
-                      <td class="text-right"><b>RS. {{ number_format($total,2) }}</b></td>
+                      <td class="text-right"><b>PHP. {{ number_format($total,2) }}</b></td>
                     </tr>
                   </div>
                 </div>

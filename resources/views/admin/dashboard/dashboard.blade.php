@@ -17,7 +17,7 @@
      <i class="ik ik-bar-chart bg-blue"></i>
      <div class="d-inline">
       <h5>Dashboard</h5>
-      <span>This is dashboard of the PeSystem.</span>
+      <span>AMS dashboard</span>
     </div>
   </div>
 </div>
@@ -107,7 +107,7 @@
   </div>
 
   <div class="row">
-    <div class="col-xl-6 col-md-6 col-sm-12">
+    {{-- <div class="col-xl-6 col-md-6 col-sm-12">
       <div class="card table-card">
         <div class="card-header">
           <h3>Somthing about Deductions </h3>
@@ -136,8 +136,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-xl-6 col-md-6 col-sm-12">
+    </div> --}}
+    {{-- <div class="col-xl-6 col-md-6 col-sm-12">
       <div class="card latest-update-card">
         <div class="card-header">
           <h3>Latest Positions</h3>
@@ -161,7 +161,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> --}}
   </div>
 </div>
 

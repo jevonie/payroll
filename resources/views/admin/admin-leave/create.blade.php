@@ -100,6 +100,18 @@
                     <div class="row">
                       <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
+                          <label for="description">Status</label>
+                          <select class="form-control" name="status" id="status">
+                            <option value="PENDING">PENDING</option>
+                            <option value="APPROVED">APPROVE</option>
+                            <option value="DISAPPROVED">DISAPPROVE</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
                           <label for="description">Description</label>  <small class="text-secondary">(Optional)</small>
                           <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>

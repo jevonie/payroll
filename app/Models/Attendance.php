@@ -9,6 +9,7 @@ class Attendance extends Model
     protected $fillable = [
         'employee_id',
         'date',
+        'date_timeout',
         'time_in',
         'time_out',
         'num_hour',
@@ -26,6 +27,10 @@ class Attendance extends Model
 
     public function getDateAttribute(){
         return date("M d, Y",strtotime($this->attributes['date']));
+    }
+
+    public function getDateTimeoutAttribute(){
+        return date("M d, Y",strtotime($this->attributes['date_timeout']));
     }
 
     public function setDateAttribute($value){

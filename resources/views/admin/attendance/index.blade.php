@@ -17,7 +17,7 @@
       height: 500px;
       border: 2px solid #00000054;
       border-radius: 11px;
-    }s
+    }
 </style>
 @endsection
 
@@ -106,6 +106,11 @@ $(document).ready(function() {
     showDetails(showUrl);
   });
 
+  $(document).on("click",".bio-actions", function(e){
+        e.preventDefault();
+        var form_url = $(this).attr("href");
+        formGet("get-attendance",1,form_url);
+    });
 });
 </script>
 @endsection

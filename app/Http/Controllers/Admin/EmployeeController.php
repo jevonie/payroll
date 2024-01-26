@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\{Employee,Schedule,Position};
+use App\Models\{Employee,Schedule,Position,User};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeRequest;
+use Illuminate\Support\Facades\Hash;
 use App\Mail\StaffCreated;
 use DataTables;
 use Mail;
@@ -32,8 +33,7 @@ class EmployeeController extends Controller
 
     //not use now : 03-05-2021 @auther : kdvamja
     public function getDataTable(){
-        $employees = Employee::get();
-        dd("aw");
+        $employees = Employee::get(); 
         return Datatables::of($employees)
                     ->addIndexColumn()
                     ->addColumn('avatar', function($data){
@@ -109,6 +109,16 @@ class EmployeeController extends Controller
         }
 
         // Mail::to($employee->email)->send(new StaffCreated($data));
+        $new_user = [
+            'employee_id' => $employee->id,
+            'name' => $employee->last_name.', '.$employee->first_name,
+            'email' => $employee->email,
+            'password' => Hash::make('password'),
+        ];
+        User::create($new_user);
+
+        $this->saveLog("ADDED NEW EMPLOYEE ".$employee->id);
+
         return response()->json([
             'status'=>true,
             'message'=>'New Employee created successfully.',
@@ -162,7 +172,9 @@ class EmployeeController extends Controller
             $employee->media_id = $media->id;
             $employee->save(); // save media_id here
         }
-
+        
+        $this->saveLog("UPDATES EMPLOYEE ".$employee->id);
+        
         return response()->json([
             'status'=>true,
             'message'=> $employee->employee_id.' updated successfully.',
@@ -178,6 +190,7 @@ class EmployeeController extends Controller
             }
         }
         $trash->delete();
+        $this->saveLog("DELETES PERMANENT: ".$id);
         return true;
     }
 
@@ -187,6 +200,7 @@ class EmployeeController extends Controller
         foreach ($employees as $employee) {
             $this->permanentDelete($employee->id);
         }
+        $this->saveLog("MASS DELETES");
         return true;
     }
 
@@ -200,6 +214,8 @@ class EmployeeController extends Controller
                 'getDataUrl' => route($this->folder.'getData'),
             ]);
         }
+
+        $this->saveLog("DELETES PERMANENT: ".$id);
         return response()->json([
             'status' => false,
             'message' => "Something went wrong please try later!",
@@ -218,6 +234,7 @@ class EmployeeController extends Controller
                 'getDataUrl' => route($this->folder.'getData'),
             ]);
         }
+        $this->saveLog("MASS DELETES");
         return response()->json([
             'status' => false,
             'message' => "Something went wrong please try later!",

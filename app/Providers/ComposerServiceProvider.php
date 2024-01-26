@@ -23,6 +23,8 @@ class ComposerServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer("admin.layout.menu","App\Http\ViewComposers\MenuViewComposer");
+        view()->composer("admin.layout.app","App\Http\ViewComposers\MenuViewComposer");
         view()->composer("admin.dashboard.dashboard","App\Http\ViewComposers\MenuViewComposer");
+        view()->composer("user.layout.app","App\Http\ViewComposers\UserViewComposer");
     }
 }

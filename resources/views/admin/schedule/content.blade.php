@@ -22,7 +22,8 @@
         </th>
         <th width="3" class="text-center">No.</th>
         <th width="45" class="text-center">Time In</th>
-        <th width="45" class="text-center">Time Ount</th>
+        <th width="45" class="text-center">Time Out</th>
+        <th width="45" class="text-center">Shifting</th>
         <th width="5" class="text-center">Actions</th>
       </tr>
     </thead>
@@ -47,6 +48,9 @@
         </td>
         <td class="text-center">
           <span><b>{{ $schedule->time_out }}</b></span>
+        </td>
+        <td class="text-center">
+          <span><b>{{ $schedule->next_day == 1 ? "YES" : "NO" }}</b></span>
         </td>
         <td class="text-center">
             <div class="btn-group btn-sm" role="group" aria-label="Basic example">

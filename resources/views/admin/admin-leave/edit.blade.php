@@ -101,6 +101,18 @@
                     <div class="row">
                       <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="form-group">
+                          <label for="description">Status</label>
+                          <select class="form-control" name="status" id="status">
+                            <option value="PENDING">PENDING</option>
+                            <option value="APPROVED">APPROVE</option>
+                            <option value="DISAPPROVED">DISAPPROVE</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
                           <label for="description">Description</label>  <small class="text-secondary">(Optional)</small>
                           <textarea class="form-control" id="description" name="description" rows="3">{{ $leave->description }}</textarea>
                         </div>
@@ -109,7 +121,7 @@
                     <div class="row">
                       <div class="col-md-12 col-lg-12 col-sm-12">
                         <button type="submit" class="btn btn-primary"><i class="ik save ik-save"></i>Update</button>
-                        <a href="{{ route('admin.leave.index') }}" class="btn btn-light"><i class="ik arrow-left ik-arrow-left"></i> Go Back</a>
+                        <a href="{{ route('admin.admin-leave.index') }}" class="btn btn-light"><i class="ik arrow-left ik-arrow-left"></i> Go Back</a>
                       </div>
                     </div>
                 </form>

@@ -69,7 +69,14 @@
                         <input type="text" class="form-control datetimepicker-input" id="time_out" data-toggle="datetimepicker" data-target="#time_out" name="time_out">
                         <small class="text-danger err" id="time_out-err"></small>
                     </div>
-                    
+                    <div class="form-group">
+                        <label for="time_out">Shifting</label><small class="text-danger">*</small>
+                        <select class="form-control" name="next_day" id="next_day">
+                            <option value="0">NO</option>
+                            <option value="1">YES</option>
+                        </select>
+                        <small class="text-danger err" id="next_day-err"></small>
+                    </div>
                     <button type="submit" class="btn btn-primary"><i class="ik save ik-save"></i>Submit</button>
                     
                     <a href="{{ route('admin.schedule.index') }}" class="btn btn-light"><i class="ik arrow-left ik-arrow-left"></i> Go Back</a>

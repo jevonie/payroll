@@ -19,6 +19,7 @@
         </div>
       </div>
       <div class="col-md-3">
+        <a href="{{ route("admin.payroll.pay13monthExportPDF")}}" target="_tab" class="btn btn-success mb-2 h-33 mx-3 float-right"><i class="ik ik-printer"></i>  13 MONTH</a>
         <button type="submit" class="btn btn-primary mb-2 h-33 float-right" id="pdfBtnPrintpayslilp"><i class="ik ik-printer"></i> PAYSLIP</button>
       </div>
     </div>
@@ -33,6 +34,7 @@
               <th>Cash Advance</th>
               <th>Overtime</th>
               <th>Net Pay</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -47,7 +49,7 @@
 <!--End data here-->
 
 <div class="divHide">
-  <form data-action="{{ $payslip_url }}" method="post" id="payslipForm">
+  <form data-action="{{ $payslip_url }}" method="post" target="_tab" id="payslipForm">
     @method("POST")
     @csrf
     <input type="text" name="date" id="payslip_date_input">
@@ -132,6 +134,12 @@ $(document).ready(function() {
       'searchable':false,
       'orderable':false,
       "className": "text-left"
+    },
+    {
+      'targets': [6],
+      'searchable':false,
+      'orderable':false,
+      "className": "text-center"
     }
     ],
     "columns":[
@@ -141,6 +149,7 @@ $(document).ready(function() {
     {"data":"cash_advance"},
     {"data":"overtime"},
     {"data":"net_pay"},
+    {"data":"action"},
     ],
   });
 

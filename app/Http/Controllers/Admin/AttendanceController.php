@@ -44,6 +44,7 @@ class AttendanceController extends Controller
                     ->addColumn('time_in_details', function($data){
                         $status = "<div>";
                         $status .= "<span class='float-left'>";
+                        $status.= $data->date ? $data->date." @ " : "";
                         $status.= $data->time_in;
                         $status .= "</span>";
                             $status .= "<span class='float-right badge'>";
@@ -58,7 +59,8 @@ class AttendanceController extends Controller
                     ->addColumn('time_out_details', function($data){
                         $status = "<div>";
                         $status .= "<span class='float-left'>";
-                        $status.= $data->time_out ? $data->time_out : "a";
+                        $status.= $data->timeout_status != ""  ? $data->date_timeout." @ " : "";
+                        $status.= $data->timeout_status != "" ? $data->time_out : "<span class='text-default'>NO DATA</span>";
                         $status .= "</span>";
                             $status .= "<span class='float-right badge'>";
                             if($data->timeout_status == 0 && $data->timeout_status != ""){
@@ -98,7 +100,7 @@ class AttendanceController extends Controller
             'num_hour' => 0,
         ];
         $attendance = Attendance::create($data);
-
+        $this->saveLog("NEW ATTENDANCE: TIME IN:".$request->time_in." | TIME OUT: ".$request->time_out);
         return response()->json([
             'status'=>true,
             'message'=>'New Attendance added successfully.',
@@ -129,7 +131,7 @@ class AttendanceController extends Controller
             'time_out' => $request->time_out
         ];
         $attendance->update($data);
-
+        $this->saveLog("UPDATE ATTENDANCE: TIME IN:".$request->time_in." | TIME OUT: ".$request->time_out);
         return response()->json([
             'status'=>true,
             'message'=> 'Attendance updated successfully.',
@@ -147,6 +149,7 @@ class AttendanceController extends Controller
                 'getDataUrl' => route($this->folder.'getData'),
             ]);
         }
+        $this->saveLog("DELETE ATTENDANCE: ".$id);
         return response()->json([
             'status' => false,
             'message' => "Something went wrong please try later!",
@@ -166,6 +169,7 @@ class AttendanceController extends Controller
                 'getDataUrl' => route($this->folder.'getData'),
             ]);
         }
+        $this->saveLog("MASS DELETES ATTENDANCE");
         return response()->json([
             'status' => false,
             'message' => "Something went wrong please try later!",

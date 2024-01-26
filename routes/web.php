@@ -38,7 +38,7 @@ Route::group(['as'=>'admin.'],function(){
 
 Route::group(['as'=>'admin.'],function(){
 	
-	Route::group(['middleware'=>'auth'],function(){
+	Route::group(['middleware'=>['auth:admin']],function(){
 
 	    Route::post("/logout",[App\Http\Controllers\Admin\Auth\AuthController::class, 'logout'])->name('logout');
 
@@ -116,18 +116,24 @@ Route::group(['as'=>'admin.'],function(){
 		//payroll routes
         Route::controller(App\Http\Controllers\Admin\PayrollController::class)->group(function () {
             Route::get('payroll',"index")->name('payroll.index');
+            Route::get('payroll-deduction/{id}',"edit")->name('payroll.edit');
+            Route::delete('payroll-deduction/destroy/{id}',"destroy")->name('payroll.destroy');
+            Route::post('payroll/update',"update")->name('payroll.update');
             Route::post('getdata/payroll',"getData")->name('payroll.getData');
             Route::post('get-payroll-data',"getDataTable")->name('payroll.getDataTable');
             Route::post('payroll/download-payroll',"payrollExportPDF")->name('payroll.payrollExportPDF');
             Route::post('payroll/download-payslip',"payslipExportPDF")->name('payroll.payslipExportPDF');
+            Route::get('payroll/download-13th-pay',"pay13monthExportPDF")->name('payroll.pay13monthExportPDF');
+            
         });
 
         //leave routes
-        Route::resource('leave',App\Http\Controllers\Admin\LeaveController::class);
+        Route::resource('admin-leave',App\Http\Controllers\Admin\LeaveController::class);
         Route::controller(App\Http\Controllers\Admin\LeaveController::class)->group(function () {
-            Route::post('getdata/leave',"getData")->name('leave.getData');
-            Route::post('get-leave-data',"getDataTable")->name('leave.getDataTable');
-            Route::post('all-delete/leave/',"massDelete")->name('leave.massDelete');
+            Route::post('getdata/leave',"getData")->name('admin-leave.getData');
+            Route::post('get-leave-data',"getDataTable")->name('admin-leave.getDataTable');
+            Route::post('all-delete/leave/',"massDelete")->name('admin-leave.massDelete');
+            Route::get('show-notif/leave/{id}',"notifUpdate")->name('admin-leave.notifUpdate');
         });
 
         // Fingerprint Devices
@@ -138,6 +144,8 @@ Route::group(['as'=>'admin.'],function(){
             Route::get('finger_device/{fingerDevice}/employees/add', 'addEmployee')->name('finger_device.add.employee');
             Route::get('finger_device/{fingerDevice}/get/attendance', 'getAttendance')->name('finger_device.get.attendance');
             Route::get('finger_device/{fingerDevice}/get/employees', 'getEmployees')->name('finger_device.get.employee');
+            Route::get('finger_device/process_attendace/all', 'processAttendanceAll')->name('finger_device.process.attendance');
+            
         });
 
         // Temp Clear Attendance route
@@ -150,5 +158,56 @@ Route::group(['as'=>'admin.'],function(){
             return back();
         })->name('finger_device.clear.attendance');
 
+        // User Logs
+        Route::resource('user_logs', App\Http\Controllers\Admin\UserLogController::class);
+        Route::controller(App\Http\Controllers\Admin\UserLogController::class)->group(function () {
+            Route::post('getdata/logs',"getData")->name('user_logs.getData');
+            Route::post('all-delete/logs/',"massDelete")->name('user_logs.massDelete');
+        });
+
+        // Reports
+        Route::controller(App\Http\Controllers\Admin\ReportsController::class)->group(function () {
+            Route::get('get-reports',"index")->name('reports.index');
+            Route::get('get-reports/show/{id}',"show")->name('reports.show');
+            Route::post('getdata/reports',"getData")->name('reports.getData');
+            
+        });
+
 	});
+});
+
+Route::group(['prefix'=>'user','as'=>'user.'],function(){
+    Route::group(['middleware'=>['auth']],function(){
+
+        // Dashboard Routes
+		Route::get("/dashboard",[App\Http\Controllers\User\DashboardController::class, 'dashboard'])->name('dashboard');
+
+        //user profile route
+        Route::controller(App\Http\Controllers\User\ProfileController::class)->group(function () {
+            Route::get("/profile","index")->name('profile.index');
+            Route::post("/profile","update")->name('profile.update');
+        });
+
+        //user profile route
+        Route::controller(App\Http\Controllers\User\AttendanceController::class)->group(function () {
+            Route::get("/user-attendance","index")->name('user-attendance.index');
+            Route::post('getdata/user-attendance',"getData")->name('user-attendance.getData');
+            Route::post('get-user-attendance-data',"getDataTable")->name('user-attendance.getDataTable');
+        });
+
+        //user deductions route
+          Route::controller(App\Http\Controllers\User\DeductionController::class)->group(function () {
+            Route::get("/user-deductions","index")->name('user-deductions.index');
+            Route::post('getdata/user-deductions',"getData")->name('user-deductions.getData');
+        });
+
+        //leave routes
+        Route::resource("leave",App\Http\Controllers\User\LeaveController::class);
+        Route::controller(App\Http\Controllers\User\LeaveController::class)->group(function () {
+            Route::post('getdata/leave',"getData")->name('leave.getData');
+            Route::post('get-leave-data',"getDataTable")->name('leave.getDataTable');
+            Route::post('all-delete/leave/',"massDelete")->name('leave.massDelete');
+            Route::get('show-notif/leave/{id}',"notifUpdate")->name('leave.notifUpdate');
+        });
+    });
 });
