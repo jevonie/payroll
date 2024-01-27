@@ -61,7 +61,7 @@ class PayrollController extends Controller
 
                     	$amount = ($data->gross_amount + $total_overtime_amount) - $total_deduction;
                     	if($amount <= 0){
-                    		return "<b class='text-danger'>Rs.".number_format($amount,2)."</b>";
+                    		return "<b class='text-danger'>PHP".number_format($amount,2)."</b>";
                     	}
                     	return "<b>PHP ".number_format($amount,2)."</b>";
                     })

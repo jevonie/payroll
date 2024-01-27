@@ -40,7 +40,7 @@
           </div>
         </td>
         <td class="text-center">
-          <span><b>Rs. {{ $deduction->amount }}</b></span>
+          <span><b>PHP {{ $deduction->amount }}</b></span>
         </td>
         <td>
           <p>{{ $deduction->description }}</p>
