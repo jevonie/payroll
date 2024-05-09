@@ -34,7 +34,7 @@
               <th>Cash Advance</th>
               <th>Overtime</th>
               <th>Net Pay</th>
-              <th></th>
+              {{-- <th></th> --}}
             </tr>
           </thead>
           <tbody>
@@ -135,12 +135,12 @@ $(document).ready(function() {
       'orderable':false,
       "className": "text-left"
     },
-    {
-      'targets': [6],
-      'searchable':false,
-      'orderable':false,
-      "className": "text-center"
-    }
+    // {
+    //   'targets': [6],
+    //   'searchable':false,
+    //   'orderable':false,
+    //   "className": "text-center"
+    // }
     ],
     "columns":[
     {"data":"employee"},
@@ -149,7 +149,7 @@ $(document).ready(function() {
     {"data":"cash_advance"},
     {"data":"overtime"},
     {"data":"net_pay"},
-    {"data":"action"},
+    // {"data":"action"},
     ],
   });
 

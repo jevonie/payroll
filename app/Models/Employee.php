@@ -34,7 +34,7 @@ class Employee extends Model implements HasMedia
         'avatarMedia',
     ];
 
-    protected $appends = ['media_url','created_on','total_working_hour','gross_amount'];
+    protected $appends = ['media_url', 'created_on', 'total_working_hour', 'gross_amount'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -50,84 +50,94 @@ class Employee extends Model implements HasMedia
         return 'employee_id';
     }
 
-    public function setFirstNameAttribute($value){
+    public function setFirstNameAttribute($value)
+    {
         $this->attributes['first_name'] = ucwords($value);
     }
 
-    public function setLastNameAttribute($value){
+    public function setLastNameAttribute($value)
+    {
         $this->attributes['last_name'] = ucwords($value);
     }
 
     protected static function boot()
     {
-    	parent::boot();
-    	static::creating(function($employee){
-    		$employee->employee_id = strtoupper(uniqid("EMP"));
-    	});
+        parent::boot();
+        static::creating(function ($employee) {
+            $employee->employee_id = strtoupper(uniqid("EMP"));
+        });
     }
 
-    public function registerMediaCollections(): void {
+    public function registerMediaCollections(): void
+    {
 
         $this->addMediaCollection('avatar')
 
             ->singleFile()
 
-            ->registerMediaConversions(function(Media $media){
+            ->registerMediaConversions(function (Media $media) {
 
                 $this->addMediaConversion('thumb')
 
-                ->format('png')
+                    ->format('png')
 
-                ->width(128)
+                    ->width(128)
 
-                ->height(128);
-
+                    ->height(128);
             });
-
     }
-    public function position(){
-        return $this->hasOne(Position::class,'id','position_id');
-    }
-
-    public function schedule(){
-        return $this->hasOne(Schedule::class,'id','schedule_id');
+    public function position()
+    {
+        return $this->hasOne(Position::class, 'id', 'position_id');
     }
 
-    public function attendances(){
-        return $this->hasMany(Attendance::class,'employee_id','id');
+    public function schedule()
+    {
+        return $this->hasOne(Schedule::class, 'id', 'schedule_id');
     }
 
-    public function overtimes(){
-        return $this->hasMany(Overtime::class,'employee_id','id');
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'employee_id', 'id');
     }
 
-    public function cashAdvances(){
-        return $this->hasMany(CashAdvance::class,'employee_id','id');
-    }
-    public function deductions(){
-        return $this->hasMany(EmployeeDeduction::class,'employee_id','id');
+    public function overtimes()
+    {
+        return $this->hasMany(Overtime::class, 'employee_id', 'id');
     }
 
-    public function getTotalWorkingHourAttribute(){
+    public function cashAdvances()
+    {
+        return $this->hasMany(CashAdvance::class, 'employee_id', 'id');
+    }
+    public function deductions()
+    {
+        return $this->hasMany(EmployeeDeduction::class, 'employee_id', 'id');
+    }
+
+    public function getTotalWorkingHourAttribute()
+    {
         return $this->attendances->sum('num_hour');
     }
 
-    public function getGrossAmountAttribute(){
-        return ($this->attendances->sum('num_hour') * $this->attributes['rate_per_hour'])/60;
-        
+    public function getGrossAmountAttribute()
+    {
+        return ($this->attendances->sum('num_hour') * $this->attributes['rate_per_hour']) / 60;
     }
 
-    protected function avatarMedia(){
-        return $this->hasOne(Media::class,'id','media_id');
+    protected function avatarMedia()
+    {
+        return $this->hasOne(Media::class, 'id', 'media_id');
     }
 
-    public function getMediaUrlAttribute(){
-        $avatar = strtolower($this->attributes['gender'].'.png');
+    public function getMediaUrlAttribute()
+    {
+        $avatar = strtolower($this->attributes['gender'] . '.png');
         $url = [
-            'original' => url('admin_assets/avatars/employee/'.$avatar),
-            'thumb' => url('admin_assets/avatars/employee/thumb/'.$avatar),
-        ];  
-        if(!is_null($this->attributes['media_id']) && !is_null($this->avatarMedia)){
+            'original' => url('admin_assets/avatars/employee/' . $avatar),
+            'thumb' => url('admin_assets/avatars/employee/thumb/' . $avatar),
+        ];
+        if (!is_null($this->attributes['media_id']) && !is_null($this->avatarMedia)) {
             $url = [
                 'original' => asset("storage/{$this->avatarMedia->id}/{$this->avatarMedia->file_name}"),
                 'thumb' => asset("storage/{$this->avatarMedia->id}/conversions/{$this->avatarMedia->name}-thumb.png")
@@ -136,19 +146,21 @@ class Employee extends Model implements HasMedia
         return $url;
     }
 
-    public function getCreatedOnAttribute(){
+    public function getCreatedOnAttribute()
+    {
         $dt = $this->attributes['created_at'];
         $date = date('M d, Y', strtotime($dt));
         return $date;
     }
 
-    
-    public function totalDeductions(){
-        $total = 0;
-        foreach($this->deductions as $item){
-            $total+=$item->deduction->amount;
-        }
+
+    public function totalDeductions()
+    {
+
+        $total = Deduction::sum('amount');
+        // foreach ($this->deductions as $item) {
+        //     $total += $item->deduction->amount;
+        // }
         return $total;
     }
-
 }

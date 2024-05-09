@@ -50,9 +50,9 @@
               <a href="{{ route('admin.deduction.edit',['deduction'=>$deduction]) }}" type="button" class="btn btn-sm btn-outline-primary">
                 <i class="ik edit-2 ik-edit-2"></i>
               </a>
-              <a data-href="{{ route('admin.deduction.destroy',['deduction'=>$deduction]) }}" type="button" class="btn btn-sm btn-outline-danger delete">
+              {{-- <a data-href="{{ route('admin.deduction.destroy',['deduction'=>$deduction]) }}" type="button" class="btn btn-sm btn-outline-danger delete">
                 <i class="ik trash-2 ik-trash-2"></i>
-              </a>
+              </a> --}}
             </div>
         </td>
         <td>
